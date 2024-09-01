@@ -24,4 +24,4 @@ Este proyecto en Python calcula la suma de los valores de los números romanos p
 
 1. Clona el repositorio:
    ```bash
-   git clone 
+   git clone https://github.com/AleRodriguezCruz/Automatas-2-2024/blob/master/Ordenamiento%20Romano.py
