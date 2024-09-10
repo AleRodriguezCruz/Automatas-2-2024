@@ -5,7 +5,7 @@
 
 
 # Lista de palabras a desmenuzar
-palabras = ["PIXEL", "PACO", "CIEN", "HIJO", "PASA", "CIVIL"
+palabras = ["PIXEL", "PACO", "CIEN", "HIJO", "PASA", "CIVIL"]
 
 # Caracteres válidos de números romanos y sus valores
 valores_romanos = {'I': 1, 'V': 5, 'X': 10, 'C': 100, 'D': 500, 'M': 1000}
