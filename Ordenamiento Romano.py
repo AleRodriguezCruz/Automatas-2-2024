@@ -4,100 +4,78 @@
 # Definir la funcion que verifique que un caracter es un nuemro romano 
 
 
-# Lista de palabras a desmenuzar
-palabras = ["PIXEL", "PACO", "CIEN", "HIJO", "PASA", "CIVIL"]
+def es_numero_romano_valido(cadena_romana):
+    # Definición de combinaciones válidas
+    combinaciones_validas = {
+        "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX",
+        "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC",
+        "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM",
+        "M", "MM", "MMM", "CIV", "CMI", "MCM", "MCD", "MD", "MDL"
+    }
+    return cadena_romana in combinaciones_validas
 
-# Caracteres válidos de números romanos y sus valores
-valores_romanos = {'I': 1, 'V': 5, 'X': 10, 'C': 100, 'D': 500, 'M': 1000}
-
-# Función para verificar y convertir una secuencia de caracteres romanos a su valor numérico
-def convertir_a_numero_romano(secuencia):
+def romano_a_decimal(cadena_romana):
+    valores_romanos = {
+        'I': 1,
+        'V': 5,
+        'X': 10,
+        'L': 50,
+        'C': 100,
+        'D': 500,
+        'M': 1000
+    }
+    
     total = 0
     valor_previo = 0
-    repeticiones = 1
-
-    for i in range(len(secuencia)):
-        valor_actual = valores_romanos[secuencia[i]]
-        
-        # Verificar repeticiones y secuencias no válidas
-        if i > 0 and secuencia[i] == secuencia[i - 1]:
-            repeticiones += 1
-            if repeticiones > 3:
-                return None  # Más de 3 repeticiones no es válido
+    
+    for caracter in reversed(cadena_romana):
+        valor = valores_romanos[caracter]
+        if valor < valor_previo:
+            total -= valor
         else:
-            repeticiones = 1
-        
-        # Comprobar secuencias inválidas como "IXI" y "IVI"
-        if i > 1 and (secuencia[i-1] == 'I' and secuencia[i] == 'X' and secuencia[i-2] == 'I'):
-            return None  # "IXI" no es válido
-        elif i > 1 and (secuencia[i-1] == 'I' and secuencia[i] == 'V' and secuencia[i-2] == 'I'):
-            return None  # "IVI" no es válido
-        
-        # Verificar si se debe restar
-        if i > 0 and valor_previo < valor_actual:
-            if not ((valor_previo == 1 and valor_actual in [5, 10]) or 
-                    (valor_previo == 10 and valor_actual in [50, 100]) or 
-                    (valor_previo == 100 and valor_actual in [500, 1000])):
-                return None  # Resta no válida
-            total += valor_actual - 2 * valor_previo  # Ajustar total
-        else:
-            total += valor_actual
-        
-        valor_previo = valor_actual
+            total += valor
+        valor_previo = valor
     
     return total
 
-# Función para limpiar la secuencia y dejar solo números romanos válidos
-def limpiar_secuencia(secuencia):
-    secuencia_limpia = ""
-    i = 0
-    while i < len(secuencia):
-        if i + 2 < len(secuencia) and secuencia[i:i+3] == "CIV":
-            secuencia_limpia += "CIV"
-            i += 3
-            # Verificar si hay una 'I' adicional después de 'CIV'
-            if i < len(secuencia) and secuencia[i] == 'I':
-                i += 1
-        elif i + 1 < len(secuencia) and secuencia[i:i+2] in ["IV", "IX", "XL", "XC", "CD", "CM"]:
-            secuencia_limpia += secuencia[i:i+2]
-            i += 2
-        elif secuencia[i] in valores_romanos:  # Solo agregar caracteres válidos
-            secuencia_limpia += secuencia[i]
-            i += 1
-        else:
-            i += 1  # Saltar caracteres no válidos
-    
-    return secuencia_limpia
+def encontrar_numero_romano_mayor(cadena_romana):
+    numero_romano_mayor = ''
 
-# Lista para almacenar los resultados
-resultados = []
+    # Iterar sobre cada carácter en la cadena
+    for i in range(len(cadena_romana)):
+        for j in range(i + 1, len(cadena_romana) + 1):
+            # Obtener la combinación actual
+            combinacion_actual = cadena_romana[i:j]
+            
+            # Verificar si la combinación actual es válida
+            if es_numero_romano_valido(combinacion_actual):
+                # Actualizar el mayor número romano si es más grande
+                if len(combinacion_actual) > len(numero_romano_mayor):
+                    numero_romano_mayor = combinacion_actual
 
-# Procesar cada palabra en la lista
+    return numero_romano_mayor
+
+def extraer_caracteres_romanos(palabra):
+    caracteres_romanos = ''
+    for caracter in palabra:
+        if caracter in 'IVXLCDM':
+            caracteres_romanos += caracter
+    return caracteres_romanos
+
+# Ejemplo de uso
+palabras = ["PIXEL", "CIVIL", "PACO", "ALE", "CAMIÓN", "HIJO"]
+
+numeros_romanos = []
 for palabra in palabras:
-    # Extraer caracteres válidos de la palabra
-    extraidos = [char for char in palabra if char in valores_romanos]
-    resultado = ''.join(extraidos)
-    
-    # Limpiar secuencia para eliminar combinaciones no válidas
-    secuencia_limpia = limpiar_secuencia(resultado)
-    
-    # Asegurarse de que la secuencia limpia no esté vacía
-    if secuencia_limpia:
-        valor_numerico = convertir_a_numero_romano(secuencia_limpia)
-        if valor_numerico is not None:
-            resultados.append((palabra, secuencia_limpia, valor_numerico))
-        else:
-            print(f"Palabra original: {palabra} -> Caracteres válidos extraídos: {resultado} -> Secuencia no válida")
-    else:
-        print(f"Palabra original: {palabra} -> No se encontraron caracteres válidos")
+    cadena_romana = extraer_caracteres_romanos(palabra)
+    numero_romano_mayor = encontrar_numero_romano_mayor(cadena_romana)
+    if numero_romano_mayor:  # Asegurarse de que no esté vacío
+        valor_decimal = romano_a_decimal(numero_romano_mayor)
+        numeros_romanos.append((palabra, numero_romano_mayor, valor_decimal))
 
-# Ordenar los resultados de menor a mayor por el valor numérico
-resultados.sort(key=lambda x: x[2])
+# Ordenar de menor a mayor por valor decimal
+numeros_romanos.sort(key=lambda x: x[2])
 
-# Imprimir los resultados ordenados
-for palabra, secuencia, valor in resultados:
-    print(f"Palabra original: {palabra} -> Caracteres válidos extraídos: {secuencia} -> Valor en número romano: {valor}")
-
-
-
-
+print("Palabras, números romanos y sus valores ordenados de menor a mayor:")
+for palabra, numero_romano, valor_decimal in numeros_romanos:
+    print(f"{palabra} -> {numero_romano} -> {valor_decimal}")
